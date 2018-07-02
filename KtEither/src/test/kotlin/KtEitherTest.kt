@@ -45,6 +45,12 @@ class KtEitherTest {
     }
 
     @Test
+    fun testGetLeftOrElse() {
+        val l = leftOf(10)
+        assert(l.getLeftOrElse(100) == 10)
+    }
+
+    @Test
     fun testMap() {
         val l = eitherOf { 10 / 0 }
         assert(l
@@ -60,17 +66,18 @@ class KtEitherTest {
     }
 
     @Test
-    fun testLeftMap() {
+    fun testMapLeft() {
         val l = eitherOf { 10 / 0 }
         assert(l
-            .mapLeft { IllegalArgumentException() }
-            .getLeft() == IllegalArgumentException())
+            .mapLeft { 100 }
+            .mapLeft { it * 2 }
+            .getLeft() == 200)
 
         val r = eitherOf { 10 / 1 }
         assert(r
-            .map { it * 10 }
-            .map { it + 10 }
-            .getOrElse(100) == 110)
+            .mapLeft { 100 }
+            .mapLeft { it * 2 }
+            .get() == 10)
     }
 
     @Test
@@ -89,6 +96,21 @@ class KtEitherTest {
     }
 
     @Test
+    fun testFlatMapLeft() {
+        val l = eitherOf { 10 / 0 }
+        assert(l
+            .flatMapLeft { leftOf(100) }
+            .flatMapLeft { leftOf(it * 2) }
+            .getLeft() == 200)
+
+        val r = eitherOf { 10 / 1 }
+        assert(r
+            .flatMapLeft { leftOf(100) }
+            .flatMapLeft { leftOf(it * 2) }
+            .get() == 10)
+    }
+
+    @Test
     fun testFold() {
         val l = eitherOf { 10 / 0 }
             .fold({ it.message }, { it + 10 })
@@ -99,5 +121,26 @@ class KtEitherTest {
             .fold({ it.message }, { it + 10 })
 
         assert(r.getOrElse(100) == 20)
+    }
+
+    @Test
+    fun testSwap(){
+        val l = eitherOf { 10 / 0 }
+        assert(l.isLeft)
+        assert(!l.isRight)
+
+        val swapedL = l.swap()
+        assert(!swapedL.isLeft)
+        assert(swapedL.isRight)
+
+        val r = eitherOf { 10 / 1 }
+        assert(!r.isLeft)
+        assert(r.isRight)
+        assert(r.right.value == 10)
+
+        val swappedR = r.swap()
+        assert(swappedR.isLeft)
+        assert(!swappedR.isRight)
+        assert(swappedR.left.value == 10)
     }
 }

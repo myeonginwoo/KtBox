@@ -2,16 +2,15 @@ sealed class Either<out L, out R> {
     abstract val isLeft: Boolean
     abstract val isRight: Boolean
 
-    abstract val left: L
-    abstract val right: R
+    abstract val left: Left<L>
+    abstract val right: Right<R>
 }
 
 data class Left<out L>(val value: L) : Either<L, Nothing>() {
     override val isLeft: Boolean = true
     override val isRight: Boolean = false
 
-    override val left: L
-        get() = value
+    override val left = this
     override val right: Nothing
         get() = throw NullPointerException()
 }
@@ -22,8 +21,7 @@ data class Right<out R>(val value: R) : Either<Nothing, R>() {
 
     override val left: Nothing
         get() = throw NullPointerException()
-    override val right: R
-        get() = value
+    override val right = this
 }
 
 fun <L> leftOf(value: L): Left<L> = Left(value)
