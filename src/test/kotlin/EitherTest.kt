@@ -1,6 +1,6 @@
 import org.junit.Test
 
-class KtEitherTest {
+class EitherTest {
 
     @Test
     fun testLeftOf() {
