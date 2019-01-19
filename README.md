@@ -7,11 +7,16 @@ TODO
 ```
 
 ## Option
-```
-TODO
+```$kotlin
+Some(3).isDefined == true
 ```
 
 ## Either
-```$xslt
+```$kotlin
 TODO
+```
+
+## Currying
+```$kotlin
+
 ```
