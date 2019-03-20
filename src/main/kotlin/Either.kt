@@ -1,4 +1,7 @@
 sealed class Either<out L, out R> {
+
+    companion object;
+
     abstract val isLeft: Boolean
     abstract val isRight: Boolean
 
@@ -24,6 +27,8 @@ data class Right<out R>(val value: R) : Either<Nothing, R>() {
     override val right = this
 }
 
+fun <R> Either.Companion.pure(value: R) = Right(value)
+
 fun <L> leftOf(value: L): Left<L> = Left(value)
 fun <R> rightOf(value: R): Right<R> = Right(value)
 fun <R> eitherOf(f: () -> R): Either<Exception, R> = try {
@@ -32,10 +37,7 @@ fun <R> eitherOf(f: () -> R): Either<Exception, R> = try {
     leftOf(e)
 }
 
-inline infix fun <L, R, R2> Either<L, R>.map(f: (R) -> R2): Either<L, R2> = when (this) {
-    is Left -> this
-    is Right -> rightOf(f(value))
-}
+inline infix fun <L, R, R2> Either<L, R>.map(f: (R) -> R2): Either<L, R2> = flatMap { Either.pure(f(it)) }
 
 inline infix fun <L, R, L2> Either<L, R>.mapLeft(f: (L) -> L2): Either<L2, R> = when (this) {
     is Left -> leftOf(f(value))

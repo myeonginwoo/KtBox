@@ -1,4 +1,7 @@
 sealed class Option<out T> {
+
+    companion object;
+
     abstract val isEmpty: Boolean
     abstract val isDefined: Boolean
 }
@@ -13,12 +16,11 @@ object None : Option<Nothing>() {
     override val isDefined: Boolean = false
 }
 
+fun <T> Option.Companion.pure(value: T): Some<T> = Some(value)
+
 fun <T> someOf(value: T): Some<T> = Some(value)
 
-inline infix fun <T, R> Option<T>.map(f: (T) -> R): Option<R> = when (this) {
-    is None -> this
-    is Some -> Some(f(value))
-}
+inline infix fun <T, R> Option<T>.map(f: (T) -> R): Option<R> = flatMap { Option.pure(f(it)) }
 
 inline infix fun <T, R> Option<T>.flatMap(f: (T) -> Option<R>): Option<R> = when (this) {
     is None -> this
